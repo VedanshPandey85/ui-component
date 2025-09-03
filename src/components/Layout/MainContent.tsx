@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button } from '../Button/Button';
 import { Heart, Download, Trash2, Copy, ExternalLink } from 'lucide-react';
+import Modal from './Modal';
+import { useState } from 'react';
 
 interface ComponentCardProps {
   title: string;
@@ -83,12 +85,23 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   );
 };
 
+interface ButtonExample {
+  title: string;
+  description: string;
+  preview: React.ReactNode;
+  code: string;
+  author: string;
+  views: string;
+  likes: string;
+  isNew?: boolean;
+}
+
 interface MainContentProps {
   selectedComponent: string;
 }
 
 export const MainContent: React.FC<MainContentProps> = ({ selectedComponent }) => {
-  const getComponentExamples = () => {
+  const getComponentExamples = (): ButtonExample[] => {
     switch (selectedComponent) {
       case 'Buttons':
         return [
@@ -96,9 +109,11 @@ export const MainContent: React.FC<MainContentProps> = ({ selectedComponent }) =
             title: 'Primary Button',
             description: 'Standard primary action button with hover states',
             preview: <Button variant="primary">Get Started</Button>,
+            code: `<Button variant=\"primary\">Get Started</Button>`,
             author: 'Design System',
             views: '38.7k',
-            likes: '559'
+            likes: '559',
+            isNew: false
           },
           {
             title: 'Button with Icon',
@@ -109,9 +124,11 @@ export const MainContent: React.FC<MainContentProps> = ({ selectedComponent }) =
                 Download
               </Button>
             ),
+            code: `<Button variant=\"primary\">\n  <Download className=\"h-4 w-4\" />\n  Download\n</Button>`,
             author: 'UI Team',
             views: '21.7k',
-            likes: '492'
+            likes: '492',
+            isNew: false
           },
           {
             title: 'Danger Button',
@@ -122,33 +139,41 @@ export const MainContent: React.FC<MainContentProps> = ({ selectedComponent }) =
                 Delete
               </Button>
             ),
+            code: `<Button variant=\"danger\">\n  <Trash2 className=\"h-4 w-4\" />\n  Delete\n</Button>`,
             author: 'Components',
             views: '16.1k',
-            likes: '240'
+            likes: '240',
+            isNew: false
           },
           {
             title: 'Loading Button',
             description: 'Button with loading state and spinner',
             preview: <Button loading>Processing...</Button>,
+            code: `<Button loading>Processing...</Button>`,
             author: 'Interactive',
             views: '13.4k',
-            likes: '383'
+            likes: '383',
+            isNew: false
           },
           {
             title: 'Secondary Button',
             description: 'Secondary action button with outline style',
             preview: <Button variant="secondary">Cancel</Button>,
+            code: `<Button variant=\"secondary\">Cancel</Button>`,
             author: 'Base Components',
             views: '7.9k',
-            likes: '301'
+            likes: '301',
+            isNew: false
           },
           {
             title: 'Small Button',
             description: 'Compact button for tight spaces',
             preview: <Button size="sm">Small Action</Button>,
+            code: `<Button size=\"sm\">Small Action</Button>`,
             author: 'Utilities',
             views: '9.3k',
-            likes: '250'
+            likes: '250',
+            isNew: false
           }
         ];
       default:
@@ -162,6 +187,7 @@ export const MainContent: React.FC<MainContentProps> = ({ selectedComponent }) =
                 <p className="text-sm">Component Preview</p>
               </div>
             ),
+            code: `<div className=\"w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-lg\"></div>`,
             author: 'Component Library',
             views: '2.6k',
             likes: '45',
@@ -172,6 +198,26 @@ export const MainContent: React.FC<MainContentProps> = ({ selectedComponent }) =
   };
 
   const examples = getComponentExamples();
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedExample, setSelectedExample] = useState<ButtonExample | null>(null);
+
+  const handleCardClick = (example: ButtonExample) => {
+    setSelectedExample(example);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedExample(null);
+  };
+
+  const handleCopyCode = () => {
+    if (selectedExample) {
+      navigator.clipboard.writeText(selectedExample.code);
+    }
+  };
 
   return (
     <main className="flex-1 p-6">
@@ -207,16 +253,17 @@ export const MainContent: React.FC<MainContentProps> = ({ selectedComponent }) =
       {/* Component Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {examples.map((example, index) => (
-          <ComponentCard
-            key={index}
-            title={example.title}
-            description={example.description}
-            preview={example.preview}
-            author={example.author}
-            views={example.views}
-            likes={example.likes}
-            isNew={example.isNew}
-          />
+          <div key={index} onClick={() => handleCardClick(example)} className="cursor-pointer">
+            <ComponentCard
+              title={example.title}
+              description={example.description}
+              preview={example.preview}
+              author={example.author}
+              views={example.views}
+              likes={example.likes}
+              isNew={example.isNew}
+            />
+          </div>
         ))}
       </div>
 
@@ -226,6 +273,26 @@ export const MainContent: React.FC<MainContentProps> = ({ selectedComponent }) =
           Load More Components
         </Button>
       </div>
+
+      {/* Modal for Button Preview and Code */}
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        {selectedExample && (
+          <div>
+            <div className="mb-6 flex flex-col items-center">
+              <div className="mb-4">{selectedExample.preview}</div>
+              <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                <pre className="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">{selectedExample.code}</pre>
+                <button
+                  onClick={handleCopyCode}
+                  className="absolute top-2 right-2 px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                >
+                  Copy code
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
     </main>
   );
 };

@@ -35,7 +35,7 @@ export const Header: React.FC = () => {
                 <span className="text-white font-bold text-sm">UI</span>
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                Component Library
+                Injala UI Component Library
               </span>
             </div>
             
