@@ -29,7 +29,11 @@ interface SidebarItem {
   href?: string;
 }
 
+
+
+
 const componentCategories: { title: string; items: SidebarItem[] }[] = [
+  
   {
     title: 'Form Components',
     items: [

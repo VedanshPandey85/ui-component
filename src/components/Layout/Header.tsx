@@ -21,6 +21,7 @@ export const Header: React.FC = () => {
     const themes: Array<'light' | 'dark' | 'system'> = ['light', 'dark', 'system'];
     const currentIndex = themes.indexOf(theme);
     const nextIndex = (currentIndex + 1) % themes.length;
+    console.log(themes[nextIndex])
     setTheme(themes[nextIndex]);
   };
 
@@ -35,7 +36,7 @@ export const Header: React.FC = () => {
                 <span className="text-white font-bold text-sm">UI</span>
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                Injala UI Component Library
+                Injala UI Component Library 
               </span>
             </div>
             
